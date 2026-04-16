@@ -21,8 +21,8 @@
 | 2 | ロジック設計 | 仕様ドキュメントがある ✅ |
 | 3 | ローカル実装 | コードが動く ✅ |
 | 4 | ローカル検証 | バックテスト・単体テスト通過 ✅ |
-| **5** | **dry_run 観測（意図確認）** | **現在ここ ← 「設計どおりに動く」を文書で判定できる** |
-| 6 | dry_run 安定化 | 異常なし期間が一定以上続く |
+| 5 | dry_run 観測（意図確認） | ✅ **完了**（2026-04-17）— exit sell / rebalance sell / risk_budget 動的変化 / all-negative → JPY 全待機、全項目観測済み |
+| **6** | **dry_run 安定化** | **現在ここ ← 異常なし期間が一定以上続く** |
 | 7 | 本番移行判断 | チェックリスト全通過 |
 | 8 | 本番初期運用 | 小ロット・監視強化期間 |
 | 9 | チューニング | パラメータ最適化（設計は変えない） |
@@ -51,40 +51,40 @@
 
 ---
 
-### Phase 2 — exit sell と rebalance sell の分離整理 ✅ 実装済み・観測中
+### Phase 2 — exit sell と rebalance sell の分離整理 ✅ 完了
 
 **目的:** SELL を 2 種に正式分離し、それぞれが独立して発火・ログに残ること。
 
-完了条件（実装は済、観測継続中）:
+完了条件（実装は済、観測終了）:
 - [x] exit sell がトレンド転換時に発火する
 - [x] rebalance sell が目標配分超過または alloc=0% の銘柄に発火する
 - [x] SELL ログに種別（exit / rebalance）が区別して記録される
-- [ ] dry_run 上で双方の発火を observation-log に記録する（観測中）
+- [x] dry_run 上で双方の発火を observation-log に記録する（2026-04-16 ADA にて観測済み）
 
 ---
 
-### Phase 3 — 配分ロジックの再設計 ✅ 実装済み・観測中
+### Phase 3 — 配分ロジックの再設計 ✅ 完了
 
 **目的:** allocation（誰に配るか）を銘柄の強さに応じて動的に変更する構造。
 
-完了条件（実装は済、観測継続中）:
+完了条件（実装は済、観測終了）:
 - [x] 銘柄ごとの MA 乖離率スコアが計算される
 - [x] スコアに基づいた目標配分がサイクルごとに算出される
 - [x] 下降銘柄は alloc=0%（完全撤退 rebalance の対象）
-- [ ] 強い銘柄へ厚く配分される流れを observation-log に記録する（観測中）
+- [x] 強い銘柄へ厚く配分される流れを observation-log に記録する（2026-04-16 18サイクル観測済み）
 
 ---
 
-### Phase 4 — market regime / risk budget の導入 ✅ 実装済み・観測中
+### Phase 4 — market regime / risk budget の導入 ✅ 完了
 
 **目的:** 「市場全体に何%出すか」をシグナルで動的に変える。
 
-完了条件（実装は済、観測継続中）:
+完了条件（実装は済、観測終了）:
 - [x] breadth（positive 銘柄数）・top1 強度・positive 強度の総量を計算
-- [x] 上記 3 要素から risk budget（0.0〜max_budget）を算出
+- [x] 上記 3 要素から risk budget（0.0～max_budget）を算出
 - [x] risk budget が allocation と掛け合わさって実際の発注量に反映される
 - [x] market_regime が thinking.json に記録される
-- [ ] all-negative → JPY 全待機のシナリオを実観測する（未達）
+- [x] all-negative → JPY 全待機のシナリオを実観測済み（2026-04-16 20:30～21:10 / 23:40～00:20）
 
 参考: config.yaml の `risk_budget` セクション（breadth_weight / top1_weight / total_weight / top1_ref / total_ref）は全て**仮値**。実測後に更新予定。
 
