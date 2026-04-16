@@ -21,7 +21,7 @@
 | 強い銘柄への加重配分（MA 乖離率スコア） | 実装済み・稼働中 |
 | risk budget（市場強度による総投入率の動的制御） | 実装済み・稼働中（breadth / top1 / total の3要素） |
 | market_regime の記録（thinking.json） | 実装済み・記録中 |
-| all-negative 時の JPY 全待機 | 実装済み・未観測 |
+| all-negative 時の JPY 全待機 | 実装済み・**観測済み** |
 
 ---
 
@@ -42,22 +42,24 @@
 
 | 確認項目 | 状態 |
 |---|---|
-| exit sell の発火 | 稼働中。観測エントリを積んでいる |
-| rebalance sell の発火 | 稼働中。alloc 0% 銘柄で完全撤退 rebalance も動作確認済み |
-| risk budget の動的変化 | 観測中（直近 60〜70% 台で推移を確認） |
-| market_regime の記録 | thinking.json / JSON に保存済みを確認 |
-| JPY が自然な待機資金として動くか | 観測中 |
-| all-negative（全 JPY 待機）の実観測 | 未達。今後の確認対象 |
+| exit sell の発火 | ✅ 確認済み（2026-04-16 18:00 ADA デッドクロス） |
+| rebalance sell の発火 | ✅ 確認済み（2026-04-16 17:40/17:50 ADA 段階的縮小） |
+| risk budget の動的変化 | ✅ 確認済み（91.9% → 0% まで変化） |
+| market_regime の記録 | ✅ thinking.json / JSON に保存済みを確認 |
+| JPY が自然な待機資金として動くか | ✅ 確認済み |
+| all-negative（全 JPY 待機）の実観測 | ✅ 確認済み（2026-04-16 20:30〜21:10 / 23:40〜00:20） |
 | ADA 単独 72% 配分の異常 | 直近では再発なし（修正後） |
 
 ---
 
 ## 残タスク（このフェーズで詰めること）
 
-- [ ] exit sell と rebalance sell が observation-log にエントリとして記録されているか確認
-- [ ] risk budget が実際に変化しているサイクルを observation-log に記録する
-- [ ] all-negative が実際に発生したときに JPY 待機に切り替わることを確認する
-- [ ] 「設計どおりに動く: Yes」と判定できるエントリを observation-log に複数積む
+- [x] exit sell と rebalance sell が observation-log にエントリとして記録されているか確認
+- [x] risk budget が実際に変化しているサイクルを observation-log に記録する
+- [x] all-negative が実際に発生したときに JPY 待機に切り替わることを確認する
+- [x] 「設計どおりに動く: Yes」と判定できるエントリを observation-log に複数積む
+
+**→ 全タスク完了。Step 6（dry_run 安定化）への移行を検討する段階。**
 
 ---
 

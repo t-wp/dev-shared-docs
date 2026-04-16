@@ -81,13 +81,29 @@
     - **all-negative（全銘柄下降）時に JPY 全待機へ切り替わるか**（未観測。Step 5 完了条件の最終項目）
     - smoothing 未実装でも問題ない相場かどうか、より強い相場変動での risk_budget 挙動
 
+### 2026-04-16〜17（exit sell / rebalance sell / all-negative の初観測）
+
+- 見たポイント:
+    - ADA のデッドクロスによる exit sell(full) の発火（18:00）
+    - ADA の rebalance sell 連続動作（17:40 / 17:50）
+    - all-negative（全銘柄下降）時の JPY 全待機への切り替わり
+- 設計意図どおりだったか: **Yes**
+- 気になった点:
+    - exit sell(full): ADA がデッドクロス → 281 ADA を全量売却。`SELL exit(full)` が正常発火。rebalance sell と混線なし
+    - rebalance sell: 17:40 に 483→447 ADA（超過率+8.1%）、17:50 に 447→281 ADA（超過率+59.1%）と段階的縮小。設計どおり
+    - all-negative: 2026-04-16 20:30〜21:10（5サイクル）と 23:40〜00:20（5サイクル）の 2 回、計 10 サイクル以上発生
+        - `全銘柄下降または市場低温 → JPY待機。...総投入率0.0%` が出力され、全銘柄が「判断: 見送り」に
+        - BUY / SELL ともに一切実行されず、JPY に 100% 退避して静止。設計どおり
+    - all-negative 明けに相場が反転上昇 → risk_budget が 0% から 94.7% まで自然回復
+- 次に見ること:
+    - Step 5 全完了条件が揃ったため、Step 6（dry_run 安定化）への移行判断
+
 ---
 
 ## フェーズ判定サマリ
 
 | 日付 | 判定 | 根拠 |
 |---|---|---|
-| （未記入） | 観測中 | エントリ積み上げ後に記載 |
+| 2026-04-17 | **Step 5 完了条件 全達成** | exit sell・rebalance sell・risk_budget 動的変化・all-negative → JPY 全待機、すべて observation-log で確認済み |
 
-> Step 5（dry_run 観測）の完了判定はここに書く。
-> 「設計どおりに動く: Yes」が複数エントリで確認できたら Step 6 へ進む判断材料とする。
+> Step 6（dry_run 安定化）へ進む判断材料が揃った。
