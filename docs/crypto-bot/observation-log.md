@@ -55,6 +55,32 @@
     - all-negative（全銘柄下降）時に JPY 全待機へ切り替わるか
     - 各SELL種別（exit/rebalance）が observation-log で明確に記録できるか
 
+### 2026-04-16（18サイクル連続観測 — risk_budget 動態・ローテーション動作確認）
+
+- 見たポイント:
+    - risk_budget が市場の弱化に応じてどう変化するか（18サイクル、14:10〜17:20）
+    - exit sell / rebalance sell の役割分担が維持されているか
+    - JPY が待機資金として自然に増えるか
+    - alloc=0% 銘柄での BUY 誤発火がないか
+- 設計意図どおりだったか: **Yes**
+- 気になった点:
+    - risk_budget は固定値ではなく、相場の弱化に応じて 91.9% → 36〜41% まで滑らかに低下した（暴れなし）
+      - 起動直後: 91.9%（多数銘柄 positive、強い相場）
+      - 中盤の安定帯: 74〜78%（全銘柄参加でなだらか）
+      - 弱化後: 36〜41%（BTC/ETH/DOGE が順次脱落）
+    - ローテーション動作は教科書的に観測できた。DOGE が 42.8% → 脱落、BTC が段階的に 0% へ縮小し、ADA が最強ポジションを維持
+    - Branch A（exit sell）: SOL でデッドクロス → `SELL exit(full)` が正常発火。Branch B（rebalance sell）と混線なし
+    - Branch B（rebalance sell）: alloc=0% になった銘柄に対して完全撤退方向の rebalance sell が順次動作
+    - alloc=0% 銘柄への BUY 誤発火: なし（target_qty<=0 ガード正常）
+    - JPY 残高は「強い行き先がない時に増える」挙動を示した（待機資金として機能）
+    - ADA=72% 単独配分の異常: 直近では再発なし
+    - alloc_sum=0 / min_alloc 残存などの異常: なし
+    - DOGE が複数サイクル連続で rebalance sell → 現時点では過剰売買とは断定せず、段階的縮小として観測継続
+    - top1_ref=0.010 / total_ref=0.030 は現市場レベル（top1 ≈ 0.7%、total ≈ 1.3%）に対して余裕があり、100% には届かない設定。明らかに不自然とは言えず、当面は観測継続
+- 次に見ること:
+    - **all-negative（全銘柄下降）時に JPY 全待機へ切り替わるか**（未観測。Step 5 完了条件の最終項目）
+    - smoothing 未実装でも問題ない相場かどうか、より強い相場変動での risk_budget 挙動
+
 ---
 
 ## フェーズ判定サマリ
