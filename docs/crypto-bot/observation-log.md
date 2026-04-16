@@ -42,6 +42,19 @@
 - 気になった点: 根因は market_prices 未渡しによる参照汚染。state.json の peak_jpy を ¥100,000 に手動リセットで対処済み
 - 次に見ること: 複数サイクル後も peak_jpy が正常範囲（portfolio 総額付近）に収まっているか
 
+### 2026-04-16（risk_budget・配分観測）
+
+- 見たポイント: risk_budget の挙動と配分の自然さ
+- 設計意図どおりだったか: Yes
+- 気になった点:
+    - risk_budget は固定72%ではなく、60〜70%台で自然に推移している
+    - market_regime が thinking.json / JSON に保存されている
+    - alloc 0% の銘柄は target_qty<=0 で BUY が止まる
+    - ADA=72% 単独配分のような不自然な挙動は直近観測では再発していない
+- 次に見ること:
+    - all-negative（全銘柄下降）時に JPY 全待機へ切り替わるか
+    - 各SELL種別（exit/rebalance）が observation-log で明確に記録できるか
+
 ---
 
 ## フェーズ判定サマリ
