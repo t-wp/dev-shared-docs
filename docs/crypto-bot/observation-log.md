@@ -100,10 +100,34 @@
 
 ---
 
+### 2026-04-17（Step 6 完了確認 — P1 異常チェック・JPY 挙動確認）
+
+- 見たポイント:
+    - 直近ログ（bot_20260417.log）での P1 異常不在の確認
+    - thinking.json・state.json による JPY 待機と再配分の設計適合確認
+- 設計意図どおりだったか: **Yes**
+- 気になった点:
+    - **P1 異常チェック（04-17 04:30 時点）**
+        - peak_jpy: ¥100,697（初期 ¥100K 比 +0.7%、正常範囲）
+        - virtual_jpy: ¥8.46（正値・全額投資中）
+        - alloc=0% 銘柄への BUY 誤発火: なし（全銘柄 alloc_pct > 0）
+        - ゼロ保有 SELL: なし（全銘柄 position_qty > 0）
+        - 04-17 ログ ERROR/Traceback: **0 件**
+        - ※ 04-16 03:06 の _run_once_symbol エラーは既知 deploy バグで修正済み・以降再発なし
+    - **JPY 待機と再配分（04-17 04:30 時点）**
+        - market_regime: breadth=6（全銘柄ポジティブ）、risk_budget=1.0
+        - balance_jpy=¥8.46 → 行き先（全銘柄ポジティブ）があるため JPY を使い切っている
+        - BUY シグナルあり・order_executed=false → JPY 残高不足のみ（設計どおり）
+        - 「強い行き先がある → JPY を最大限使う」動作を確認
+- 次に見ること: Step 7（本番移行判断）の検討
+
+---
+
 ## フェーズ判定サマリ
 
 | 日付 | 判定 | 根拠 |
 |---|---|---|
 | 2026-04-17 | **Step 5 完了条件 全達成** | exit sell・rebalance sell・risk_budget 動的変化・all-negative → JPY 全待機、すべて observation-log で確認済み |
+| 2026-04-17 | **Step 6 完了条件 全達成** | P1 異常なし・JPY 待機/再配分が設計意図どおりであることを確認・observation-log 記録完了 |
 
-> Step 6（dry_run 安定化）へ進む判断材料が揃った。
+> Step 7（本番移行判断）へ進む判断材料が揃った。
