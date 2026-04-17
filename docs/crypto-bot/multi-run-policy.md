@@ -24,6 +24,19 @@
 **「モデル」= Signal Model + Portfolio Policy** の組み合わせ全体。
 Param Setはモデルに対する設定値の**不変スナップショット**。
 
+### モデルの管理方法
+
+モデルは **コード置き場** と **識別子** の2軸で管理する。
+
+| 軸 | 管理対象 | 保存先 |
+|---|---|---|
+| コード置き場 | Signal Model のロジック | `core/strategy/*.py` |
+| コード置き場 | Portfolio Policy のロジック | `bot.py`（今後 Phase 1 で policy module として分離予定） |
+| 識別子 | 組み合わせの特定 | `model_id` + `model_version` + `policy_id` |
+
+運用上の「モデル」はコードのファイルパスではなく、**識別子（`model_id` / `policy_id` / `model_version`）で管理する**。
+コードが同じでも `model_version` が異なれば別モデルとして扱う。
+
 ---
 
 ## II. 探索対象パラメータ
@@ -161,7 +174,77 @@ mode            : "dryrun" | "prod"
 
 ---
 
-## IX. 必須観測項目（全run共通でログに残す）
+## IX. 保存構造
+
+### ディレクトリ構成
+
+```
+crypto-bot/
+├── config.yaml                       ← 共通設定（symbols, 手数料等）
+├── param_sets/                       ← 不変 Param Set の保管庫
+│   ├── ps-001.yaml
+│   ├── ps-002.yaml
+│   └── ...
+├── logs/
+│   ├── shared/                       ← Market Data Feeder の共有データ
+│   │   └── market_data.db
+│   ├── experiments/                  ← experiment 単位で分離
+│   │   └── exp-20260417-w01/
+│   │       ├── manifest.yaml             ← 固定条件（slot↔param_set紐付け、初期条件、model_version）
+│   │       ├── scoreboard.json           ← 集計結果（複合スコア・ランキング・ゲート判定）
+│   │       ├── promotion_decision.json   ← 昇格判断・却下理由の記録
+│   │       ├── notes.md                  ← 人間の所感・備考
+│   │       ├── slot-1/                   ← run 単位で分離
+│   │       │   ├── state.json
+│   │       │   ├── portfolio_history.json
+│   │       │   ├── thinking.json
+│   │       │   └── bot_YYYYMMDD.log
+│   │       ├── slot-2/ ... slot-5/
+│   │       └── (次週: exp-20260424-w02/ を新規作成)
+│   └── prod/                         ← 本番は experiment とは分離
+│       ├── state.json
+│       ├── portfolio_history.json
+│       ├── thinking.json
+│       └── bot_YYYYMMDD.log
+└── core/
+    └── strategy/
+```
+
+### 保存ポリシー
+
+| 何を | どこに | 不変性 | 備考 |
+|---|---|---|---|
+| **Param Set** | `param_sets/ps-NNN.yaml` | **不変** | 一度作ったら書き換えない。修正は新ID発行 |
+| **Experiment定義** | `logs/experiments/exp-XXXXX/manifest.yaml` | **凍結** | experiment開始後は変更不可 |
+| **集計結果** | `logs/experiments/exp-XXXXX/scoreboard.json` | 追記 | 週次評価時に書き込み |
+| **昇格判断** | `logs/experiments/exp-XXXXX/promotion_decision.json` | 追記 | 昇格/却下の判断とその理由 |
+| **run別ログ** | `logs/experiments/exp-XXXXX/slot-N/` | 追記のみ | experiment単位で完全分離 |
+| **本番ログ** | `logs/prod/` | 追記のみ | experimentとは独立 |
+| **市場データ** | `logs/shared/market_data.db` | 共有 | Feeder が書き込み、全botが読み取り |
+
+### 全成果物へのメタ情報埋め込み
+
+`state.json` / `portfolio_history.json` / `thinking.json` / `bot_*.log` の全てに、以下の識別子を含める。
+ファイル単体で拾った時に正体不明にならないため。
+
+```json
+{
+  "run_id": "dryrun-slot-1-20260417",
+  "experiment_id": "exp-20260417-w01",
+  "model_id": "ma-rsi-rotation-v1",
+  "model_version": "1.0.0",
+  "policy_id": "rotation-riskbudget-fullexit",
+  "param_set_id": "ps-001",
+  "mode": "dryrun",
+  ...
+}
+```
+
+`bot_*.log` は各行の先頭に `run_id` を付与し、grep で特定 run のログだけ抽出可能にする。
+
+---
+
+## X. 必須観測項目（全run共通でログに残す）
 
 | カテゴリ | 項目 |
 |---|---|
@@ -176,7 +259,7 @@ mode            : "dryrun" | "prod"
 
 ---
 
-## X. 本番運用ルール
+## XI. 本番運用ルール
 
 | 項目 | ルール |
 |---|---|
@@ -187,7 +270,7 @@ mode            : "dryrun" | "prod"
 
 ---
 
-## XI. 探索サイクルと昇格判断の分離
+## XII. 探索サイクルと昇格判断の分離
 
 | | 周期 | 目的 |
 |---|---|---|
@@ -197,7 +280,7 @@ mode            : "dryrun" | "prod"
 
 ---
 
-## XII. 実装ロードマップ
+## XIII. 実装ロードマップ
 
 | Phase | 内容 | 備考 |
 |---|---|---|
