@@ -307,3 +307,5 @@ Phase 0 完了時に以下が全て埋まっていること:
 - [ ] Sharpe 計算粒度（日次 or cycle単位）
 - [ ] 複合スコアの重み付け数値（★を具体的係数に）
 - [ ] 昇格ゲート条件の全閾値確定
+- [ ] `candle_days` 最適化（3→1）: `get_klines` は毎サイクル3日分×6銘柄=18回取得しているが、SQLiteに `INSERT OR IGNORE` しているため大半が重複。初回以降は当日分だけで十分（18→6回/cycle）。Feeder導入前に単独で適用可能
+- [ ] Dashboard API呼び出し削減: 現行はbot+dashboardで最大158回/10min、うちdashboardが89%（get_ticker×120 + get_assets×20）。キャッシュTTL延長やWebSocket化を検討

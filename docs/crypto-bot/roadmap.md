@@ -115,6 +115,13 @@
 
 ---
 
+## Phase 5 前の最適化タスク
+
+- [ ] `candle_days` 3→1: `get_klines` の冗長取得削減（18→6回/cycle）。Feeder導入前に単独適用可能
+- [ ] Dashboard API呼び出し削減: 全API呼び出しの89%がdashboard由来（get_ticker×120 + get_assets×20 /10min）。並行化前に負荷を下げておく
+
+---
+
 ## 将来拡張候補（保留中）
 
 - 1hour 足への変更（現在 10min はテスト用。ローテーション bot としては足が短すぎる可能性あり）
