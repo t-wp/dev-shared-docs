@@ -1,12 +1,13 @@
 # crypto-bot ロードマップ
 
-> **全体地図。今どこにいるかは** https://github.com/t-wp/dev-shared-docs/blob/main/docs/crypto-bot/current-phase.md **を参照。**
+> **全体地図。今どこにいるかは** `current-phase.md` **を参照。**
+> **具体的な実務タスクは** GitHub Issues **で管理する。**
 
 ---
 
 ## 設計思想（サマリ）
 
-詳細は https://github.com/t-wp/dev-shared-docs/blob/main/.github/copilot-instructions.md を参照。
+詳細は `copilot-instructions.md` を参照。
 
 このbotは **銘柄ローテーションbot**。強い銘柄へ資金を移し、弱い銘柄から撤退する。
 「誰に配るか（allocation）」と「市場に何%出すか（risk budget）」を分けて制御することが最終形。
@@ -94,7 +95,12 @@
 
 **目的:** 複数の設定値セットを並行して比較し、最適な組み合わせを継続的に探索する体制を作る。
 
-**方針書:** https://github.com/t-wp/dev-shared-docs/blob/main/docs/crypto-bot/multi-run-policy.md
+**方針書:** `multi-run-policy.md`
+
+**運用上の注意:**
+- 現在は **Phase 5 前段** を先行中
+- 具体作業は Issue で追う
+- 親 Issue: https://github.com/t-wp/crypt-bot/issues/1
 
 サブフェーズ:
 
@@ -117,8 +123,16 @@
 
 ## Phase 5 前の最適化タスク
 
-- [ ] `candle_days` 3→1: `get_klines` の冗長取得削減（18→6回/cycle）。Feeder導入前に単独適用可能
-- [ ] Dashboard API呼び出し削減: 全API呼び出しの89%がdashboard由来（get_ticker×120 + get_assets×20 /10min）。並行化前に負荷を下げておく
+- `candle_days` 3→1: `get_klines` の冗長取得削減（Issue #8）
+- Dashboard API呼び出し削減: 並行化前の負荷低減（Issue #9）
+
+---
+
+## Issue 運用
+
+- 現在地と移行条件: `current-phase.md`
+- 実務タスク一覧: https://github.com/t-wp/crypt-bot/issues
+- Phase 5 前段の親 Issue: https://github.com/t-wp/crypt-bot/issues/1
 
 ---
 
