@@ -73,6 +73,23 @@
 
 ---
 
+## Phase 5-1 実装開始順
+
+Phase 5-1 は大規模 modularization ではなく、**正本固定と境界定義** から着手する。
+
+| 順 | 内容 | 成果物 |
+|---|---|---|
+| 1 | **param_set 正本固定** | `param_sets/ps-001.yaml` の導入。config.yaml から可変値を分離 |
+| 2 | **param_set 読み込み + resolved manifest 保存** | bot.py 起動時に param_set をマージし、manifest.yaml を出力 |
+| 3 | **Portfolio Policy interface 定義** | `core/policy/base.py` に抽象クラスを定義。4 つの責務を明示 |
+| 4 | **bot.py から policy 切り出し** | 現行の rotation + risk budget + full exit を `core/policy/rotation_riskbudget.py` へ抽出 |
+
+- Risk Manager (`core/risk_manager.py`) は Policy に吸収しない。安全停止の別責務として維持
+- overlay は移行期の互換用途として残す。param_set 読み込みが安定したら廃止
+- 各ステップで既存の dry-run / 2-slot 比較挙動を壊さないことを確認してから次へ進む
+
+---
+
 ## 詳細の置き場
 
 - 観測結果の詳細: `observation-log.md`

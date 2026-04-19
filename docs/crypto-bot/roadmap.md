@@ -107,7 +107,7 @@
 | Sub-Phase | 内容 |
 |---|---|
 | **5-0. 設計** | 識別子体系確定、評価指標定義、探索パラメータ軸確定、必須観測項目固定、昇格ゲート条件明文化、現行値確定表の作成 |
-| **5-1. 分解** | bot.py から Signal Model / Portfolio Policy / Param Set を構造的に分離。差し替え可能なリファクタ |
+| **5-1. 正本固定と境界定義** | param_set 正本の導入、config/param_set/manifest の責務分離、Portfolio Policy interface 定義、bot.py から policy 切り出し。大規模リファクタではなく、比較運用に必要な境界を最小コストで固定する |
 | **5-2. データ共有** | Market Data Feeder 分離。共有ストア設計。Prod フォールバック実装 |
 | **5-3. 並行Dry-Run** | docker-compose で slot×5 + prod。独立ログ/state。experiment_id/run_id 管理 |
 | **5-4. 比較ダッシュボード** | 全 slot の成績並列表示。複合スコアランキング。ゲート条件合否表示 |
