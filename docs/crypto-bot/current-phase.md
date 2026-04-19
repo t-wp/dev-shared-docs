@@ -75,17 +75,19 @@
 
 ## Phase 5-1 実装開始順
 
-Phase 5-1 は大規模 modularization ではなく、**正本固定と境界定義** から着手する。
+Phase 5-1 は大規模 modularization ではなく、**正本固定と境界定義** から最小コストで着手する。
+詳細な定義は `multi-run-policy.md` Section III-A〜III-D を参照。
 
-| 順 | 内容 | 成果物 |
-|---|---|---|
-| 1 | **param_set 正本固定** | `param_sets/ps-001.yaml` の導入。config.yaml から可変値を分離 |
-| 2 | **param_set 読み込み + resolved manifest 保存** | bot.py 起動時に param_set をマージし、manifest.yaml を出力 |
-| 3 | **Portfolio Policy interface 定義** | `core/policy/base.py` に抽象クラスを定義。4 つの責務を明示 |
-| 4 | **bot.py から policy 切り出し** | 現行の rotation + risk budget + full exit を `core/policy/rotation_riskbudget.py` へ抽出 |
+| 順 | 内容 | Issue | 対応セクション |
+|---|---|---|---|
+| 1 | **param_set 正本固定** — `param_sets/ps-001.yaml` / `ps-002.yaml` を正本フォーマットで作成。config.yaml から可変値を分離する | #25 | III-A 正本フォーマット / III-B 責務分離 |
+| 2 | **param_set 読み込み + resolved manifest 保存** — bot.py 起動時に `--param-set` で読み込み、config とマージし、resolved manifest を slot ディレクトリに出力する | #25, #23 | III-C 起動時の解決順 |
+| 3 | **Portfolio Policy interface 定義** — `core/policy/base.py` に抽象クラスを定義。risk budget 算出 / allocation 算出 / rebalance sell size 算出 / exit sell size 算出 の 4 責務 | #24 | III-D Policy と RM の責務境界 |
+| 4 | **bot.py から policy 切り出し** — 現行の rotation + risk budget + full exit を `core/policy/rotation_riskbudget.py` へ抽出 | #24 | III-D |
 
-- Risk Manager (`core/risk_manager.py`) は Policy に吸収しない。安全停止の別責務として維持
-- overlay は移行期の互換用途として残す。param_set 読み込みが安定したら廃止
+**制約:**
+- Risk Manager (`core/risk_manager.py`) は Policy に吸収しない。安全停止の別責務として維持（III-D）
+- overlay は移行期の互換用途として残す。param_set 読み込みが安定したら廃止（III-B）
 - 各ステップで既存の dry-run / 2-slot 比較挙動を壊さないことを確認してから次へ進む
 
 ---
