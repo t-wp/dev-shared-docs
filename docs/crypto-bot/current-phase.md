@@ -40,8 +40,8 @@
   - 逆に実運用でのみ見えるボトルネックがあるか
 
 3. **観測上の新しい論点を評価する**
-  - min_lot スキップが多いことをどう評価するか
-  - all-negative 比率が高いことをどう評価するか
+  - ~~min_lot スキップが多いことをどう評価するか~~ → **#21 で評価完了。資金スケール問題ではない（rebalance 離散性 + alloc=0% + 配分充足の 3 分類）。ログ分類バグも修正済み（90d6a99）**
+  - all-negative 比率が高いことをどう評価するか → #22 で評価中
 
 ---
 
@@ -68,7 +68,7 @@
 - [x] 本番初期 `param_set` 候補が replay で選定できている
 - [x] 1hour 実観測の初期傾向が整理されている
 - [x] ローソク足データ欠損 WARN が定常運用の阻害要因ではないと確認できている
-- [ ] 本番判断に向けて残論点が min_lot / all-negative 評価へ絞り込まれている
+- [ ] 本番判断に向けて残論点が ~~min_lot /~~ all-negative 評価へ絞り込まれている（#21 完了、#22 残り）
 
 ---
 
@@ -86,4 +86,6 @@
 - Epic: https://github.com/t-wp/crypt-bot/issues/1
 - 1hour dry_run 観測継続: https://github.com/t-wp/crypt-bot/issues/3
 - ローソク足データ欠損 WARN 調査: https://github.com/t-wp/crypt-bot/issues/20
+- min_lot スキップ再分類: https://github.com/t-wp/crypt-bot/issues/21 （評価完了）
+- all-negative 比率評価: https://github.com/t-wp/crypt-bot/issues/22
 - Dashboard UI 刷新: https://github.com/t-wp/crypt-bot/issues/11
