@@ -204,3 +204,34 @@
 | 2026-04-17 | **Step 6 完了条件 全達成** | P1 異常なし・JPY 待機/再配分が設計意図どおりであることを確認・observation-log 記録完了 |
 
 > Step 7（本番移行判断）へ進む判断材料が揃った。
+
+---
+
+### 2026-04-20（LogLayout 移行 — bot.py records/ 正本化 + フラットファイル完全廃止）
+
+- 見たポイント:
+  - Phase 1: bot.py を LogLayout 経由に改修し、records/ を正本として書き込むようにする
+  - Phase 2: デプロイ後に records/ への書き込み・フラット側の更新停止・停止ボタン連携を検証
+  - Phase 3: prod / slot-1 / slot-2 の旧フラットファイル（state.json, thinking.json, events.json, bot_*.log, portfolio_history.json）を全削除
+  - Phase 4: log_layout.py からフォールバックコードを全削除（`_resolve_read()`, `migrate_from_flat()`, 旧flat結合ロジック）、dashboard.py から `migrate_from_flat()` 呼び出し削除
+- 設計意図どおりだったか: **Yes**
+- 検証結果:
+  - **bot.py 変更点（8箇所）**: LogLayout import 追加、パス初期化を LogLayout 経由に変更、thinking.json パス（3箇所）、events→summaries パス、portfolio_history を JSONL append 方式に変更
+  - **Phase 2 検証（全7チェック PASS）**:
+    - records/state.json: 18:50:11 にサイクルで更新 ✅
+    - records/thinking.json: 18:50:11 に更新 ✅
+    - summaries/summaries.json: 18:50:11 に更新 ✅
+    - cache/portfolio_history JSONL: 6行→8行に増加 ✅
+    - debug/bot_*.log: 起動ログ + サイクルログ出力 ✅
+    - フラットファイル更新停止: 18:20 で凍結 ✅
+    - 停止ボタン連携: records/state.json の running フラグを bot が正しく読み取り「[停止中]」スキップを確認 ✅
+  - **slot-1/slot-2 も同様に全チェック PASS**（records/ に書き込み、フラット側は凍結）
+  - **Phase 3**: prod/slot-1/slot-2 のフラットファイル計15ファイルを削除。削除後も bot/dashboard 正常動作
+  - **Phase 4**: log_layout.py から `_resolve_read()`, `migrate_from_flat()`, 旧flat結合ロジックを全削除。dashboard.py から `migrate_from_flat()` 呼び出し削除。構文検証 OK、デプロイ後正常動作
+- 最終状態:
+  - records/ が唯一の正本。フラットファイルは存在しない
+  - フォールバックコードなし。読み込みメソッドは直接新配置パスを返す
+  - 全5コンテナ正常稼働（prod + slot-1 + slot-2 + dashboard + tailscale）
+- 次に見ること:
+  - 次回サイクル以降のエラーなし稼働の継続確認
+  - Phase 5-1 の実装着手（param_set 正本固定 → Policy interface 定義）

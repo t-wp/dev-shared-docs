@@ -78,6 +78,11 @@
 Phase 5-1 は大規模 modularization ではなく、**正本固定と境界定義** から最小コストで着手する。
 詳細な定義は `multi-run-policy.md` Section III-A〜III-D を参照。
 
+**前提: LogLayout 移行完了（2026-04-20）**
+- bot.py / dashboard.py ともに LogLayout 経由で records/ を正本として読み書き
+- 旧フラットファイル（state.json, thinking.json, events.json, bot_*.log 等）は全削除済み
+- log_layout.py のフォールバックコード（`_resolve_read()`, `migrate_from_flat()`）も削除済み
+
 | 順 | 内容 | Issue | 対応セクション |
 |---|---|---|---|
 | 1 | **param_set 正本固定** — `param_sets/ps-001.yaml` / `ps-002.yaml` を正本フォーマットで作成。config.yaml から可変値を分離する | #25 | III-A 正本フォーマット / III-B 責務分離 |

@@ -107,7 +107,7 @@
 | Sub-Phase | 内容 |
 |---|---|
 | **5-0. 設計** | 識別子体系確定、評価指標定義、探索パラメータ軸確定、必須観測項目固定、昇格ゲート条件明文化、現行値確定表の作成 |
-| **5-1. 正本固定と境界定義** | 大規模リファクタではなく、正本固定と境界定義から始める最小コストの分解。4 ステップで進める: ① param_set 正本固定 (#25) → ② param_set 読み込み + resolved manifest 保存 (#25, #23) → ③ Portfolio Policy interface 定義 (#24) → ④ bot.py から policy 切り出し (#24)。詳細は `multi-run-policy.md` III-A〜III-D |
+| **5-1. 正本固定と境界定義** | 大規模リファクタではなく、正本固定と境界定義から始める最小コストの分解。4 ステップで進める: ① param_set 正本固定 (#25) → ② param_set 読み込み + resolved manifest 保存 (#25, #23) → ③ Portfolio Policy interface 定義 (#24) → ④ bot.py から policy 切り出し (#24)。前提として LogLayout 移行は完了済み（2026-04-20: bot.py records/ 正本化、フラットファイル全削除、フォールバックコード削除）。詳細は `multi-run-policy.md` III-A〜III-D |
 | **5-2. データ共有** | Market Data Feeder 分離。共有ストア設計。Prod フォールバック実装 |
 | **5-3. 並行Dry-Run** | docker-compose で slot×5 + prod。独立ログ/state。experiment_id/run_id 管理 |
 | **5-4. 比較ダッシュボード** | 全 slot の成績並列表示。複合スコアランキング。ゲート条件合否表示 |
