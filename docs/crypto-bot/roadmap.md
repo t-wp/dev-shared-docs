@@ -138,6 +138,7 @@
 
 ## 将来拡張候補（保留中）
 
-- ~~1hour 足への変更~~ → **実施済み（2026-04-17）**: replay で 1hour が唯一の利益足であることを確認し、config.yaml を変更・デプロイ
+- ~~1hour 足への変更~~ → **実施済み（2026-04-17）**: replay で 1hour が唯一の利益足であることを確認し、config.yaml を変更・デプロイ。**現在の暫定 interval champion**。今後 interval 比較が必要な場合は別 experiment として切り出す（同一 experiment 内での混在は禁止）
+- AI half-day summary: 08:30 / 20:30 の固定 window で cycle_payload を集約。bot 本体とは分離して実装（→ `ai-summary-pipeline.md`）
 - risk_budget 参照値（top1_ref / total_ref）の調整（観測後に根拠を持って行う）
 - rebalance_min_jpy の調整（小額閾値の妥当性確認後）
