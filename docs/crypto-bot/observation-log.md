@@ -235,3 +235,27 @@
 - 次に見ること:
   - 次回サイクル以降のエラーなし稼働の継続確認
   - Phase 5-1 の実装着手（param_set 正本固定 → Policy interface 定義）
+
+
+### 2026-04-20（設計決定: interval 方針 + AI half-day summary 設計）
+
+- 見たポイント:
+  - 「1hour 固定」前提の docs 記述を実態に合わせて見直す
+  - AI half-day summary の責務分離と設計方針の確定
+- 設計意図どおりだったか: **設計確定（実装前）**
+- 決定内容:
+  - **interval の扱い**: bar-close 型は可変（10min / 30min / 1hour）。1hour は暫定 champion だが固定ではない。同一 experiment 内では interval を混在させない。interval 比較は experiment 間で行う
+  - **docs 更新**: current-phase.md / roadmap.md から「1hour 固定」前提の表現を除去。「bar-close dry_run 観測フェーズ」に統一
+  - **新規 docs 追加**:
+    - un-log-architecture.md: LogLayout 完了後の保存構造と責務分離の正本
+    - observation-method.md: ログ確認手順・コマンド早見表・interval 変更時の注意
+    - i-summary-pipeline.md: AI half-day summary の設計決定版
+  - **AI half-day summary 設計**:
+    - cycle_payload（records/thinking.json）が正本。読み取り専用
+    - window は 08:30 / 20:30 の固定時刻で切る（interval に依存しない）
+    - window_summary は派生物。ai_summaries/ に保存
+    - AI 失敗時は fallback（数値テキスト化）。bot 本体を止めない
+- 次に見ること:
+  - Issue #26（AI half-day summary 実装）の着手判断
+  - #22（all-negative 評価）の継続
+  - Phase 5-1 の実装着手
